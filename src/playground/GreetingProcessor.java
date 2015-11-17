@@ -1,12 +1,15 @@
 package playground;
 
-import org.easybatch.core.api.AbstractRecordProcessor;
+import org.easybatch.core.processor.RecordProcessingException;
+import org.easybatch.core.processor.RecordProcessor;
+import org.easybatch.core.record.Record;
 
-public class GreetingProcessor extends AbstractRecordProcessor<Greeting> {
+public class GreetingProcessor implements RecordProcessor<Record<Greeting>, Record<Greeting>> {
 
 	@Override
-	public void processRecord(Greeting greeting) throws Exception {
-		System.out.println(greeting.getGreetingMessage());
+	public Record<Greeting> processRecord(Record<Greeting> record) throws RecordProcessingException {
+		System.out.println(record.getPayload().getGreetingMessage());
+		return record;
 	}
 
 }

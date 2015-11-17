@@ -2,32 +2,33 @@ package playground;
 
 import java.io.File;
 
-import org.easybatch.core.impl.EasyBatchEngine;
-import org.easybatch.core.impl.EasyBatchEngineBuilder;
-import org.easybatch.core.api.EasyBatchReport;
+import org.easybatch.core.job.Job;
+import org.easybatch.core.job.JobBuilder;
+import org.easybatch.core.job.JobExecutor;
+import org.easybatch.core.job.JobReport;
 import org.easybatch.flatfile.FlatFileRecordReader;
-import org.easybatch.flatfile.dsv.DelimitedRecordMapper;
+import org.easybatch.flatfile.DelimitedRecordMapper;
 
 public class LauncherCIA {
 
 	    public static void main(String[] args) throws Exception {
 
-	        // Build an easy batch engine
-	        EasyBatchEngine easyBatchEngine = new EasyBatchEngineBuilder()
-	            // requirement N°1
-	            .registerRecordReader(new FlatFileRecordReader(new File("C:/Users/Tobias/Documents/CIAInquiryReport.csv")))
-	            // requirement N°2
-	            .registerRecordMapper(
-	                new DelimitedRecordMapper(CentralIdentityAuditPoint.class, new String[]{"DateTimeStamp", "LANID", "SourceApplication", "SourceProcess", "RequestIdentifier", "RequestSubmitter", "RequestApprover", "AuditAction", "AuditPointDetails"}))
-	            // requirement N°3
-	            .registerRecordProcessor(new CIAProcessor())
+	        // Build an easy batch job
+			Job job = new JobBuilder()
+	            // requirement Nï¿½1
+	            .reader(new FlatFileRecordReader(new File("C:/Users/Tobias/Documents/CIAInquiryReport.csv")))
+	            // requirement Nï¿½2
+	            .mapper(
+						new DelimitedRecordMapper(CentralIdentityAuditPoint.class, "DateTimeStamp", "LANID", "SourceApplication", "SourceProcess", "RequestIdentifier", "RequestSubmitter", "RequestApprover", "AuditAction", "AuditPointDetails"))
+	            // requirement Nï¿½3
+	            .processor(new CIAProcessor())
 	            .build();
 
-	        // Run easy batch engine
-	        EasyBatchReport easyBatchReport = easyBatchEngine.call();
+	        // Run easy batch job
+	        JobReport jobReport = JobExecutor.execute(job);
 
-	        // Print the batch execution report
-	        System.out.println(easyBatchReport);
+	        // Print the job execution report
+	        System.out.println(jobReport);
 	    }
 
 	}
