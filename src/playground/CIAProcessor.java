@@ -1,12 +1,15 @@
 package playground;
 
-import org.easybatch.core.api.AbstractRecordProcessor;
+import org.easybatch.core.processor.RecordProcessingException;
+import org.easybatch.core.processor.RecordProcessor;
+import org.easybatch.core.record.Record;
 
-public class CIAProcessor extends AbstractRecordProcessor<CentralIdentityAuditPoint> {
+public class CIAProcessor implements RecordProcessor<Record<CentralIdentityAuditPoint>, Record<CentralIdentityAuditPoint>> {
 
 	@Override
-	public void processRecord(CentralIdentityAuditPoint CIAPoint) throws Exception {
-		System.out.println(CIAPoint.getCIAPoint());
+	public Record<CentralIdentityAuditPoint> processRecord(Record<CentralIdentityAuditPoint> record) throws RecordProcessingException {
+		System.out.println(record.getPayload().getCIAPoint());
+		return record;
 	}
 
 }

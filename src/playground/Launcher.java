@@ -3,8 +3,10 @@ package playground;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import org.easybatch.core.impl.EasyBatchEngine;
-import org.easybatch.core.impl.EasyBatchEngineBuilder;
+import org.easybatch.core.job.Job;
+import org.easybatch.core.job.JobBuilder;
+import org.easybatch.core.job.JobExecutor;
+import org.easybatch.core.job.JobReport;
 import org.easybatch.jdbc.JdbcRecordReader;
 import org.easybatch.jdbc.JdbcRecordMapper;
 
@@ -16,22 +18,22 @@ public class Launcher {
         Connection connection = DriverManager.getConnection("jdbc:hsqldb:mem", "sa", "");
         DbUtils.populateEmbeddedDB(connection);
 
-        // Build an easy batch engine
-        EasyBatchEngine easyBatchEngine = new EasyBatchEngineBuilder()
-            // requirement N°1
-            .registerRecordReader(new JdbcRecordReader( 
-                connection, // database JDBC connection
-                "select * from greeting")) // Query string to fetch data
-            // requirement N°2
-            .registerRecordMapper(new JdbcRecordMapper(Greeting.class))
-            // requirement N°3 
-            .registerRecordProcessor(new GreetingProcessor()) 
+        // Build a batch job
+        Job job = new JobBuilder()
+            // requirement Nï¿½1
+            .reader(new JdbcRecordReader(
+                    connection, // database JDBC connection
+                    "select * from greeting")) // Query string to fetch data
+            // requirement Nï¿½2
+            .mapper(new JdbcRecordMapper(Greeting.class))
+            // requirement Nï¿½3
+            .processor(new GreetingProcessor())
             .build();
 
-        // Run easy batch engine
-        EasyBatchReport easyBatchReport = easyBatchEngine.call();
+        // Run the job
+        JobReport jobReport = JobExecutor.execute(job);
 
-        // Print the batch execution report
-        System.out.println(easyBatchReport);
+        // Print the job execution report
+        System.out.println(jobReport);
     }
 }
